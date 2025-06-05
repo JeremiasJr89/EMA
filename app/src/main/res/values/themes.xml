@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MusicSchool" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/ema_green_main</item>
+        <item name="colorPrimaryVariant">@color/ema_green_dark</item>
+        <item name="colorOnPrimary">@color/ema_white</item>
+        <item name="colorSecondary">@color/ema_green_dark</item>
+        <item name="colorSecondaryVariant">@color/ema_green_main</item>
+        <item name="colorOnSecondary">@color/ema_white</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:textColorPrimary">@color/ema_black</item>
+        <item name="android:textColorSecondary">@android:color/darker_gray</item>
+    </style>
+</resources>

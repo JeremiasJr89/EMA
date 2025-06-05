@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">EMA</string>
+    <string name="performances_dos_alunos">Performances dos Alunos</string>
+    <string name="adicionar_nova_performance">Adicionar nova performance</string>
+    <string name="ema_escola_de_m_sica">EMA - Escola de Música</string>
+    <string name="nome_de_usu_rio">Nome de Usuário</string>
+    <string name="senha">Senha</string>
+    <string name="login">Login</string>
+    <string name="cadastrar">Cadastrar</string>
+    <string name="selecione_um_grupo_para_participar_da_conversa">Selecione um grupo para participar da conversa.</string>
+    <string name="grupos_de_estudo">Grupos de Estudo</string>
+    <string name="nome_do_grupo">Nome do Grupo</string>
+    <string name="digite_sua_mensagem">Digite sua mensagem...</string>
+    <string name="enviar">Enviar</string>
+    <string name="ol_usu_rio">Olá, Usuário!</string>
+    <string name="seu_dashboard">Seu Dashboard</string>
+    <string name="acompanhamento_de_progresso">Acompanhamento de Progresso</string>
+    <string name="tempo_de_estudo_hoje_0_minutos">Tempo de estudo hoje: 0 minutos</string>
+    <string name="ainda_n_o_estudou_hoje_que_tal_come_ar">Ainda não estudou hoje. Que tal começar?</string>
+    <string name="iniciar_estudo">Iniciar Estudo</string>
+    <string name="compartilhar_performance">Compartilhar Performance</string>
+    <string name="grupos_de_estud">Grupos de Estudo</string>
+    <string name="sair">Sair</string>
+    <string name="logo_ema">Logo EMA</string>
+    <string name="escola_de_m_sica_ema">Escola de Música EMA</string>
+</resources>
