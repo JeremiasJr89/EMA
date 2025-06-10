@@ -27,24 +27,24 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // Observa o usuário atual do Firebase. Se for nulo, redireciona para o login.
         authViewModel.currentUser.observe(this) { firebaseUser ->
             if (firebaseUser == null) {
                 val intent = Intent(this, AuthActivity::class.java)
                 startActivity(intent)
-                finish() // Finaliza DashboardActivity
+                finish()
             } else {
-                binding.tvWelcome.text = "Olá, ${firebaseUser.email}!" // Exibe o e-mail
-                // Atualiza o username no DashboardViewModel para funcionalidades como performances
+                binding.tvWelcome.text = "Olá, ${firebaseUser.email}!"
                 dashboardViewModel.updateLoggedInUser(firebaseUser.email ?: "Usuário Desconhecido")
             }
         }
 
         dashboardViewModel.studyTimeToday.observe(this) { timeInMillis ->
-            val minutes = TimeUnit.MILLISECONDS.toMinutes(timeInMillis)
-            binding.tvStudyTime.text = String.format(Locale.getDefault(), "Tempo de estudo hoje: %d minutos", minutes)
+            // Use a nova função formatTime do ViewModel
+            binding.tvStudyTime.text = "Tempo de estudo hoje: ${dashboardViewModel.formatTime(timeInMillis)}"
             binding.tvProgressStatus.text = dashboardViewModel.getPointsForStudyTime()
 
+            // O cálculo da barra de progresso ainda pode ser baseado em minutos para simplificar a meta
+            val minutes = timeInMillis / (1000 * 60)
             val progress = (minutes * 100 / 60).toInt().coerceIn(0, 100)
             binding.progressBarStudy.progress = progress
         }
