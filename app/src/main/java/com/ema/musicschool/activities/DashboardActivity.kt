@@ -27,14 +27,16 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        authViewModel.loggedInUser.observe(this) { username ->
-            if (username == null) {
-                // Se o usuário não estiver logado, redireciona para a tela de autenticação
+        // Observa o usuário atual do Firebase. Se for nulo, redireciona para o login.
+        authViewModel.currentUser.observe(this) { firebaseUser ->
+            if (firebaseUser == null) {
                 val intent = Intent(this, AuthActivity::class.java)
                 startActivity(intent)
-                finish()
+                finish() // Finaliza DashboardActivity
             } else {
-                binding.tvWelcome.text = "Olá, $username!"
+                binding.tvWelcome.text = "Olá, ${firebaseUser.email}!" // Exibe o e-mail
+                // Atualiza o username no DashboardViewModel para funcionalidades como performances
+                dashboardViewModel.updateLoggedInUser(firebaseUser.email ?: "Usuário Desconhecido")
             }
         }
 
