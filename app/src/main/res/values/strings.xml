@@ -23,4 +23,8 @@
     <string name="sair">Sair</string>
     <string name="logo_ema">Logo EMA</string>
     <string name="escola_de_m_sica_ema">Escola de Música EMA</string>
+    <string name="email_de_usu_rio">Email de Usuário</string>
+    <string name="login_">Login</string>
+    <string name="cadastrar_">Cadastrar</string>
+    <string name="senha_">Senha</string>
 </resources>
