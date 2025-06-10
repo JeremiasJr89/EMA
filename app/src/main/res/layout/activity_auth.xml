@@ -11,27 +11,28 @@
         android:id="@+id/iv_ema_logo"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:src="@mipmap/ic_launcher_ema"
+        android:layout_marginBottom="16dp"
         android:contentDescription="@string/logo_ema"
+        android:src="@mipmap/ic_launcher_ema"
         app:layout_constraintBottom_toTopOf="@+id/tv_app_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        android:layout_marginBottom="16dp"/>
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/tv_app_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:text="@string/escola_de_m_sica_ema"
-        android:textColor="@color/ema_white" android:textSize="28sp"
+        android:textColor="@color/ema_white"
+        android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/et_username_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_ema_logo"
-        android:layout_marginBottom="32dp" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_ema_logo" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/et_username_layout"
@@ -39,11 +40,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
+        android:hint="@string/email_de_usu_rio"
+        app:boxBackgroundColor="@color/ema_white"
+        app:boxStrokeColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/et_password_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_app_title"
-        app:boxBackgroundColor="@color/ema_white" app:boxStrokeColor="@color/ema_green_dark" android:hint="Nome de Usuário">
+        app:layout_constraintTop_toBottomOf="@+id/tv_app_title">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_username"
@@ -58,11 +61,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:hint="@string/senha_"
+        app:boxBackgroundColor="@color/ema_white"
+        app:boxStrokeColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/btn_login"
         app:layout_constraintEnd_toEndOf="@+id/et_username_layout"
         app:layout_constraintStart_toStartOf="@+id/et_username_layout"
-        app:layout_constraintTop_toBottomOf="@+id/et_username_layout"
-        app:boxBackgroundColor="@color/ema_white" app:boxStrokeColor="@color/ema_green_dark" android:hint="Senha">
+        app:layout_constraintTop_toBottomOf="@+id/et_username_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_password"
@@ -77,8 +82,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Login"
-        android:backgroundTint="@color/ema_green_dark" android:textColor="@color/ema_white"
+        android:backgroundTint="@color/ema_white"
+        android:text="@string/login_"
+        android:textColor="@color/ema_green_dark"
         app:layout_constraintBottom_toTopOf="@+id/btn_register"
         app:layout_constraintEnd_toEndOf="@+id/et_password_layout"
         app:layout_constraintStart_toStartOf="@+id/et_password_layout"
@@ -89,8 +95,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Cadastrar"
-        android:backgroundTint="@color/ema_white" android:textColor="@color/ema_green_dark" app:layout_constraintBottom_toBottomOf="parent"
+        android:backgroundTint="@color/ema_green_dark"
+        android:text="@string/cadastrar_"
+        android:textColor="@color/ema_white"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/btn_login"
         app:layout_constraintStart_toStartOf="@+id/btn_login"
         app:layout_constraintTop_toBottomOf="@+id/btn_login" />
