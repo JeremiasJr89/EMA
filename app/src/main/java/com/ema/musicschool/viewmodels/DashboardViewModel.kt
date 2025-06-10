@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import com.ema.musicschool.data.UserRepository
 
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
-    private val userRepository = UserRepository(application.applicationContext)
 
     private val _loggedInUsername = MutableLiveData<String?>()
     val loggedInUsername: LiveData<String?> = _loggedInUsername
@@ -35,21 +34,21 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    init {
-        _loggedInUsername.value = userRepository.getLoggedInUser()
+    fun updateLoggedInUser(email: String) {
+        _loggedInUsername.value = email
     }
 
     fun startStudySession() {
         if (!_isStudying.value!!) {
             studyStartTime = System.currentTimeMillis()
             _isStudying.value = true
-            handler.post(updateStudyTimeRunnable) // Inicia o timer
+            handler.post(updateStudyTimeRunnable)
         }
     }
 
     fun stopStudySession() {
         if (_isStudying.value!!) {
-            handler.removeCallbacks(updateStudyTimeRunnable) // Para o timer
+            handler.removeCallbacks(updateStudyTimeRunnable)
             val elapsed = System.currentTimeMillis() - studyStartTime
             _studyTimeToday.value = (_studyTimeToday.value ?: 0L) + elapsed
             _isStudying.value = false

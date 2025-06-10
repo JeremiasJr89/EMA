@@ -7,10 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import com.ema.musicschool.data.Message
 import com.ema.musicschool.data.StudyGroup
 import com.ema.musicschool.data.UserRepository
+import com.google.firebase.auth.FirebaseAuth
 import java.util.UUID
 
 class CollaborationViewModel(application: Application) : AndroidViewModel(application) {
-    private val userRepository = UserRepository(application.applicationContext)
+
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+
     private val _studyGroups = MutableLiveData<MutableList<StudyGroup>>(mutableListOf())
     val studyGroups: LiveData<MutableList<StudyGroup>> = _studyGroups
 
@@ -20,26 +23,40 @@ class CollaborationViewModel(application: Application) : AndroidViewModel(applic
     private val _currentGroupId = MutableLiveData<String?>(null)
     val currentGroupId: LiveData<String?> = _currentGroupId
 
+
     init {
-        val group1 = StudyGroup("group1", "Violão Acústico", "Grupo para quem ama violão e bossa nova.")
-        group1.members.add("aluno1")
+        val group1 =
+            StudyGroup("group1", "Violão Acústico", "Grupo para quem ama violão e bossa nova.")
+        group1.members.add("aluno1@email.com")
         val group2 = StudyGroup("group2", "Teoria Musical Avançada", "Para os futuros maestros!")
-        group2.members.add("outroAluno")
+        group2.members.add("outro@email.com")
 
         _studyGroups.value?.add(group1)
         _studyGroups.value?.add(group2)
 
-        _currentGroupMessages.value?.add(Message(UUID.randomUUID().toString(), "aluno1", "Olá a todos! Alguém tem dicas de acordes dissonantes?"))
-        _currentGroupMessages.value?.add(Message(UUID.randomUUID().toString(), "outroAluno", "Dá uma olhada no livro de harmonia do Arnold Schoenberg!"))
+        _currentGroupMessages.value?.add(
+            Message(
+                UUID.randomUUID().toString(),
+                "aluno1@email.com",
+                "Olá a todos! Alguém tem dicas de acordes dissonantes?"
+            )
+        )
+        _currentGroupMessages.value?.add(
+            Message(
+                UUID.randomUUID().toString(),
+                "outro@email.com",
+                "Dá uma olhada no livro de harmonia do Arnold Schoenberg!"
+            )
+        )
     }
 
     fun joinGroup(groupId: String) {
-        val currentUser = userRepository.getLoggedInUser()
+        val currentUser = firebaseAuth.currentUser?.email
         if (currentUser != null) {
             _studyGroups.value?.find { it.id == groupId }?.apply {
                 if (!members.contains(currentUser)) {
                     members.add(currentUser)
-                    _studyGroups.value = _studyGroups.value // Notifica o LiveData
+                    _studyGroups.value = _studyGroups.value
                 }
             }
             _currentGroupId.value = groupId
@@ -47,7 +64,7 @@ class CollaborationViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun postMessage(groupId: String, content: String) {
-        val currentUser = userRepository.getLoggedInUser()
+        val currentUser = firebaseAuth.currentUser?.email
         if (currentUser != null) {
             val newMessage = Message(UUID.randomUUID().toString(), currentUser, content)
             val currentList = _currentGroupMessages.value ?: mutableListOf()
@@ -62,7 +79,8 @@ class CollaborationViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun isUserInGroup(groupId: String): Boolean {
-        val currentUser = userRepository.getLoggedInUser()
-        return _studyGroups.value?.find { it.id == groupId }?.members?.contains(currentUser) ?: false
+        val currentUser = firebaseAuth.currentUser?.email
+        return _studyGroups.value?.find { it.id == groupId }?.members?.contains(currentUser)
+            ?: false
     }
 }
