@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "251997816639",
+    "project_id": "ema-musicschool",
+    "storage_bucket": "ema-musicschool.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251997816639:android:7116bac163f04689feb58a",
+        "android_client_info": {
+          "package_name": "com.ema.musicschool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "251997816639-9e0vluu6u44jbq9s9q9s1gvekaefjr7q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ema.musicschool",
+            "certificate_hash": "cc5251d7d973f8ff8cc225934d852583994e76d6"
+          }
+        },
+        {
+          "client_id": "251997816639-2907ep5pqa5agq2qe14ui8cdl9jc0s2a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUZeseDvCb9hgOpKPtlhh1MB__P2PZvQc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "251997816639-2907ep5pqa5agq2qe14ui8cdl9jc0s2a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
