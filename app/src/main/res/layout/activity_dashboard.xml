@@ -1,50 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ema_white"
-    tools:context=".activities.DashboardActivity">
+    tools:context=".screen.DashboardActivity"> <com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/app_bar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="?attr/actionBarTheme"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        android:id="@+id/tv_welcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Olá, Usuário!"
-        android:textColor="@color/ema_green_dark"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:titleTextColor="?attr/colorOnPrimary"
+        app:popupTheme="@style/Theme.AppCompat.Light"
+        app:logo="@mipmap/ic_launcher_ema" />
+</com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
-        android:id="@+id/tv_dashboard_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Seu Dashboard"
-        android:textSize="20sp"
-        android:textColor="@color/ema_black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_welcome"
-        android:layout_marginTop="16dp"/>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_progress"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:contentPadding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_dashboard_title">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,93 +39,140 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_welcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Acompanhamento de Progresso"
-                android:textColor="@color/ema_green_main"
-                android:textSize="18sp"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center_horizontal" android:text="Olá, Usuário!"
+                android:textColor="@color/ema_green_dark"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_study_time"
+                android:id="@+id/tv_dashboard_title"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Tempo de estudo hoje: 0 minutos"
-                android:textColor="@color/ema_black"
-                android:textSize="16sp" />
-
-            <ProgressBar
-                android:id="@+id/progress_bar_study"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:progressTint="@color/ema_green_dark"
-                android:max="100"
-                android:progress="0" />
-
-            <TextView
-                android:id="@+id/tv_progress_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Ainda não estudou hoje. Que tal começar?"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="14sp" />
-
-            <Button
-                android:id="@+id/btn_toggle_study"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Iniciar Estudo"
+                android:layout_gravity="center_horizontal" android:text="Seu Dashboard"
+                android:textColor="@color/ema_black"
+                android:textSize="20sp" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_progress"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp"
+                app:contentPadding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Acompanhamento de Progresso"
+                        android:textColor="@color/ema_green_main"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_study_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Tempo de estudo hoje: 00:00:00"
+                        android:textColor="@color/ema_black"
+                        android:textSize="16sp" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_bar_study"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressTint="@color/ema_green_dark" />
+
+                    <TextView
+                        android:id="@+id/tv_progress_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Ainda não estudou hoje. Que tal começar?"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp" />
+
+                    <Button
+                        android:id="@+id/btn_toggle_study"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:backgroundTint="@color/ema_green_main"
+                        android:text="Iniciar Estudo"
+                        android:textColor="@color/ema_white" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tv_history_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp" android:text="Histórico de Estudo"
+                android:textColor="@color/ema_black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_study_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" android:nestedScrollingEnabled="false" tools:listitem="@layout/item_study_log" />
+
+            <Button
+                android:id="@+id/btn_performances"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@color/ema_green_dark"
+                android:text="Compartilhar Performance"
+                android:textColor="@color/ema_white"
+                android:layout_marginBottom= "4dp" />
+
+            <Button
+                android:id="@+id/btn_collaboration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:backgroundTint="@color/ema_green_main"
+                android:text="Grupos de Estudo"
+                android:textColor="@color/ema_white"
+                android:layout_marginBottom="4dp" />
+
+            <Button
+                android:id="@+id/btn_logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="24dp"
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:text="Sair"
                 android:textColor="@color/ema_white" />
 
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <Button
-        android:id="@+id/btn_performances"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:text="Compartilhar Performance"
-        android:backgroundTint="@color/ema_green_dark"
-        android:textColor="@color/ema_white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_progress" />
-
-    <Button
-        android:id="@+id/btn_collaboration"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Grupos de Estudo"
-        android:backgroundTint="@color/ema_green_main"
-        android:textColor="@color/ema_white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_performances" />
-
-    <Button
-        android:id="@+id/btn_logout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
-        android:text="Sair"
-        android:backgroundTint="@android:color/holo_red_dark"
-        android:textColor="@color/ema_white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

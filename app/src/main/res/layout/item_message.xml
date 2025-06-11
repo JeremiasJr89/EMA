@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:padding="8dp"
-        android:background="@drawable/message_bubble_received"
+        android:background="@android:color/white"
         android:textColor="@android:color/black"
         android:textSize="14sp"
         android:text="Conteúdo da mensagem."/>

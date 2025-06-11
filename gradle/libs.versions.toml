@@ -1,22 +1,24 @@
 # libs.versions.toml
 
 [versions]
-agp = "8.9.1"
+agp = "8.9.3"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-appcompat = "1.7.0"
+appcompat = "1.7.1"
 material = "1.12.0"
-lifecycle = "2.8.0"
-activityKtx = "1.9.0"
-fragmentKtx = "1.7.1"
+lifecycle = "2.9.1"
+activityKtx = "1.10.1"
+fragmentKtx = "1.8.8"
 recyclerview = "1.4.0"
 cardview = "1.0.0"
 constraintlayout = "2.2.1"
-firebaseBom = "33.15.0" #
-googleServices = "4.4.2" #
+firebaseBom = "33.15.0"
+googleServices = "4.4.2"
+firebaseFirestore = "25.1.4"
+gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +36,11 @@ androidx-cardview = { group = "androidx.cardview", name = "cardview", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestore" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
