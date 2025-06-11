@@ -25,7 +25,7 @@ class StudyLogViewModel(application: Application) : AndroidViewModel(application
     val currentDayStudyLog: LiveData<StudyLog?> = _currentDayStudyLog
 
     private val _pastStudyLogs = MutableLiveData<List<StudyLog>>()
-    val pastStudyLogs: LiveData<List<StudyLog>> = _pastStudyLogs
+    val pastStudyLogs: LiveData<List<StudyLog>> = _pastStudyLogs // Esta é a lista que a UI observa
 
     private val _operationStatus = MutableLiveData<Boolean>()
     val operationStatus: LiveData<Boolean> = _operationStatus
@@ -33,9 +33,12 @@ class StudyLogViewModel(application: Application) : AndroidViewModel(application
     private val studyLogsCollection = firestore.collection("study_logs")
 
     init {
-        loadLogsFromLocalCache()
-        loadCurrentDayStudyLogFromFirestore()
-        loadPastStudyLogsFromFirestore()
+        Log.d("StudyLogViewModel", "INIT: Chamando loadLogsFromLocalCache()")
+        loadLogsFromLocalCache() // Carrega do cache local primeiro
+        Log.d("StudyLogViewModel", "INIT: Chamando loadCurrentDayStudyLogFromFirestore()")
+        loadCurrentDayStudyLogFromFirestore() // Carrega do Firestore (dia atual)
+        Log.d("StudyLogViewModel", "INIT: Chamando loadPastStudyLogsFromFirestore()")
+        loadPastStudyLogsFromFirestore()      // Carrega do Firestore (histórico)
     }
 
     /**
@@ -50,81 +53,75 @@ class StudyLogViewModel(application: Application) : AndroidViewModel(application
             return
         }
 
-        val todayDate =
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
+        val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
         val documentRef = studyLogsCollection.document("${userId}_$todayDate")
 
         val studyLog = StudyLog(
             date = todayDate,
             totalTimeMillis = totalTimeMillis,
             userId = userId,
-            timestamp = Date() // Incluir timestamp para ordenação e sincronização
+            timestamp = Date()
         )
 
+        // 1. Salvar localmente primeiro
         localDataSource.saveCurrentDayStudyTime(totalTimeMillis)
-        _currentDayStudyLog.value = studyLog // Atualizar o LiveData local imediatamente
-        Log.d(
-            "StudyLogViewModel",
-            "Log de estudo salvo localmente para $todayDate: ${totalTimeMillis}ms"
-        )
+        _currentDayStudyLog.value = studyLog // Atualizar o LiveData do dia atual localmente
+        Log.d("StudyLogViewModel", "Log de estudo salvo localmente para $todayDate: ${totalTimeMillis}ms")
 
+        // Para garantir que o histórico seja atualizado imediatamente após um novo salvamento
+        // SEM ESPERAR O FIRESTORE, vamos adicionar o log salvo à lista local e depois sincronizar.
+        val currentPastLogs = _pastStudyLogs.value?.toMutableList() ?: mutableListOf()
+        val existingLogIndex = currentPastLogs.indexOfFirst { it.date == todayDate && it.userId == userId }
+        if (existingLogIndex != -1) {
+            currentPastLogs[existingLogIndex] = studyLog // Atualiza o log existente
+        } else {
+            // Se for um novo log para o dia, adiciona e reordena.
+            currentPastLogs.add(studyLog)
+            currentPastLogs.sortByDescending { it.date } // Mantenha a ordem por data
+        }
+        _pastStudyLogs.value = currentPastLogs.toList() // Atualiza o LiveData do histórico localmente
+        localDataSource.savePastStudyLogs(currentPastLogs) // Salva a lista atualizada no cache
+
+        // 2. Tentar salvar no Firestore
         documentRef.set(studyLog)
             .addOnSuccessListener {
                 _operationStatus.value = true
-                Log.d(
-                    "StudyLogViewModel",
-                    "Log de estudo salvo/atualizado no Firestore para $todayDate"
-                )
-                loadPastStudyLogsFromFirestore()
+                Log.d("StudyLogViewModel", "Log de estudo salvo/atualizado no Firestore para $todayDate")
+                // Após salvar no Firestore, recarrega o histórico para garantir a sincronização e consistência
+                loadPastStudyLogsFromFirestore() // Força um recarregamento após salvamento Firestore
             }
             .addOnFailureListener { e ->
                 _operationStatus.value = false
-                Log.e(
-                    "StudyLogViewModel",
-                    "Erro ao salvar log de estudo no Firestore para $todayDate",
-                    e
-                )
+                Log.e("StudyLogViewModel", "Erro ao salvar log de estudo no Firestore para $todayDate", e)
             }
     }
 
     /**
-     * Carrega os logs de estudo do cache local.
+     * Carrega os logs de estudo do cache local e atualiza o LiveData.
      */
     private fun loadLogsFromLocalCache() {
+        // Carrega tempo do dia atual
         val cachedCurrentDayTime = localDataSource.getCurrentDayStudyTime()
-        val todayDate =
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
-        _currentDayStudyLog.value = StudyLog(
-            date = todayDate,
-            totalTimeMillis = cachedCurrentDayTime,
-            userId = firebaseAuth.currentUser?.uid ?: ""
-        )
+        val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
+        _currentDayStudyLog.value = StudyLog(date = todayDate, totalTimeMillis = cachedCurrentDayTime, userId = firebaseAuth.currentUser?.uid ?: "")
 
+        // Carrega logs passados
         val cachedPastLogs = localDataSource.getPastStudyLogs()
-        _pastStudyLogs.value = cachedPastLogs
-        Log.d(
-            "StudyLogViewModel",
-            "Logs de estudo carregados do cache local: ${cachedPastLogs.size} registros."
-        )
+        _pastStudyLogs.value = cachedPastLogs // <--- ATUALIZA O LIVEDATA COM CACHE LOCAL
+        Log.d("StudyLogViewModel", "Logs de estudo carregados do cache local: ${cachedPastLogs.size} registros.")
     }
 
     /**
-     * Carrega o log de estudo do dia atual do Firestore e atualiza o cache.
+     * Carrega o log de estudo do dia atual do Firestore e atualiza o cache e o LiveData.
      */
     fun loadCurrentDayStudyLogFromFirestore() {
         val userId = firebaseAuth.currentUser?.uid
         if (userId == null) {
-            _currentDayStudyLog.value = StudyLog(
-                date = SimpleDateFormat(
-                    "yyyy-MM-dd",
-                    Locale.getDefault()
-                ).format(Calendar.getInstance().time), totalTimeMillis = 0L, userId = ""
-            )
+            _currentDayStudyLog.value = StudyLog(date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time), totalTimeMillis = 0L, userId = "")
             return
         }
 
-        val todayDate =
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
+        val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
         val documentRef = studyLogsCollection.document("${userId}_$todayDate")
 
         documentRef.get()
@@ -134,94 +131,48 @@ class StudyLogViewModel(application: Application) : AndroidViewModel(application
                 } else {
                     StudyLog(date = todayDate, totalTimeMillis = 0L, userId = userId)
                 }
-                _currentDayStudyLog.value = studyLog // Atualiza LiveData
-                localDataSource.saveCurrentDayStudyTime(
-                    studyLog?.totalTimeMillis ?: 0L
-                ) // Atualiza cache local
-                Log.d(
-                    "StudyLogViewModel",
-                    "Log de estudo do dia atual carregado do Firestore: ${studyLog?.totalTimeMillis}ms"
-                )
+                _currentDayStudyLog.value = studyLog
+                localDataSource.saveCurrentDayStudyTime(studyLog?.totalTimeMillis ?: 0L)
+                Log.d("StudyLogViewModel", "Log de estudo do dia atual carregado do Firestore: ${studyLog?.totalTimeMillis}ms")
             }
             .addOnFailureListener { e ->
-                Log.e(
-                    "StudyLogViewModel",
-                    "Erro ao carregar log de estudo do dia atual do Firestore",
-                    e
-                )
+                Log.e("StudyLogViewModel", "Erro ao carregar log de estudo do dia atual do Firestore", e)
             }
     }
 
     /**
-     * Carrega os logs de estudo anteriores do Firestore e atualiza o cache.
+     * Carrega os logs de estudo anteriores do Firestore e atualiza o cache e o LiveData.
      */
     fun loadPastStudyLogsFromFirestore() {
         val userId = firebaseAuth.currentUser?.uid
         if (userId == null) {
-            _pastStudyLogs.value = emptyList()
-            Log.d(
-                "StudyLogViewModel",
-                "loadPastStudyLogsFromFirestore: Usuário não logado, retornando lista vazia."
-            )
+            _pastStudyLogs.value = emptyList() // Garante que a lista está vazia se não há usuário
+            Log.d("StudyLogViewModel", "loadPastStudyLogsFromFirestore: Usuário não logado, retornando lista vazia.")
             return
         }
 
         val sevenDaysAgo = Calendar.getInstance()
         sevenDaysAgo.add(Calendar.DAY_OF_YEAR, -7)
-        val sevenDaysAgoDateString =
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(sevenDaysAgo.time)
+        val sevenDaysAgoDateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(sevenDaysAgo.time)
 
         Log.d("StudyLogViewModel", "loadPastStudyLogsFromFirestore: User ID being queried: $userId")
-        Log.d(
-            "StudyLogViewModel",
-            "loadPastStudyLogsFromFirestore: Querying dates >= $sevenDaysAgoDateString"
-        )
+        Log.d("StudyLogViewModel", "loadPastStudyLogsFromFirestore: Querying dates >= $sevenDaysAgoDateString")
 
         studyLogsCollection
-            .whereEqualTo("userId", userId) // <-- SUSPEITO PRINCIPAL: user ID
+            .whereEqualTo("userId", userId)
             .whereGreaterThanOrEqualTo("date", sevenDaysAgoDateString)
             .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                Log.d(
-                    "StudyLogViewModel",
-                    "Firestore query SUCESSO para logs passados."
-                )
-                Log.d(
-                    "StudyLogViewModel",
-                    "Número de documentos no querySnapshot: ${querySnapshot.documents.size}"
-                )
-
-                val logs = querySnapshot.documents.mapNotNull {
-                    val log = it.toObject(StudyLog::class.java)
-                    if (log == null) {
-                        Log.e(
-                            "StudyLogViewModel",
-                            "Falha ao converter documento para StudyLog: ${it.id}"
-                        )
-                    }
-                    log
-                }
-                _pastStudyLogs.value = logs
-                localDataSource.savePastStudyLogs(logs)
-                Log.d(
-                    "StudyLogViewModel",
-                    "Logs de estudo anteriores carregados do Firestore: ${logs.size} registros. (APÓS CONVERSÃO)"
-                )
-                logs.forEach {
-                    Log.d(
-                        "StudyLogViewModel",
-                        "Log carregado (convertido): Data=${it.date}, Tempo=${it.totalTimeMillis}, Usuário=${it.userId}"
-                    )
-                }
+                val logs = querySnapshot.documents.mapNotNull { it.toObject(StudyLog::class.java) }
+                _pastStudyLogs.value = logs // <--- ATUALIZA O LIVEDATA COM DADOS DO FIRESTORE
+                localDataSource.savePastStudyLogs(logs) // Atualiza cache local
+                Log.d("StudyLogViewModel", "Logs de estudo anteriores carregados do Firestore: ${logs.size} registros.")
+                logs.forEach { Log.d("StudyLogViewModel", "Loaded Log (Converted): Date=${it.date}, Time=${it.totalTimeMillis}, User=${it.userId}") }
             }
             .addOnFailureListener { e ->
-                _pastStudyLogs.value = emptyList()
-                Log.e(
-                    "StudyLogViewModel",
-                    "ERRO ao carregar logs de estudo anteriores do Firestore",
-                    e
-                )
+                Log.e("StudyLogViewModel", "ERRO ao carregar logs de estudo anteriores do Firestore", e)
+                // Se falhar no Firestore, o LiveData _pastStudyLogs já tem o valor do cache (se houver)
             }
     }
 }

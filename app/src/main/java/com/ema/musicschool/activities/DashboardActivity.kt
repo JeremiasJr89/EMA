@@ -9,21 +9,20 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import com.ema.musicschool.databinding.ActivityDashboardBinding
-import com.ema.musicschool.viewmodels.AuthViewModel
-import com.ema.musicschool.viewmodels.DashboardViewModel
-import java.util.Locale
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ema.musicschool.R
 import com.ema.musicschool.data.StudyLog
+import com.ema.musicschool.databinding.ActivityDashboardBinding
+import com.ema.musicschool.viewmodels.AuthViewModel
+import com.ema.musicschool.viewmodels.DashboardViewModel
 import java.text.SimpleDateFormat
-import java.util.concurrent.TimeUnit
+import java.util.Locale
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -44,6 +43,8 @@ class DashboardActivity : AppCompatActivity() {
         setupObservers()
         setupListeners()
         setupOnBackPressedCallback()
+        Log.d("DashboardActivity", "onCreate: DashboardActivity criada.")
+
     }
 
     // NOVO MÉTODO: Configura o comportamento do botão Voltar
@@ -111,6 +112,11 @@ class DashboardActivity : AppCompatActivity() {
                 "Tempo de estudo: ${dashboardViewModel.formatTime(timeInMillis)}"
         }
 
+        dashboardViewModel.studyStatusMessage.observe(this) { message ->
+            binding.tvProgressStatus.text = message //
+        }
+
+
         dashboardViewModel.totalStudyTimeTodayFromFirestore.observe(this) { totalTimeForDay ->
             val minutes = totalTimeForDay / (1000 * 60)
             val progress = (minutes * 100 / 60).toInt().coerceIn(0, 100)
@@ -131,10 +137,12 @@ class DashboardActivity : AppCompatActivity() {
             studyLogAdapter.submitList(logs)
             Log.d(
                 "DashboardActivity",
-                "Observer de pastStudyLogs acionado. Itens recebidos: ${logs.size}"
+                "OBSERVER: Observer de pastStudyLogs acionado. Itens recebidos: ${logs.size}. Chamando submitList()."
             )
         }
+        Log.d("DashboardActivity", "setupObservers: Observers configurados.")
     }
+
 
     private fun setupListeners() {
         binding.btnToggleStudy.setOnClickListener {
@@ -185,9 +193,15 @@ class DashboardActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: StudyLogViewHolder, position: Int) {
             val log = logsList[position]
             holder.bind(log)
+            Log.d("StudyLogAdapter", "BIND: Item ${position} sendo vinculado: Date=${log.date}, Time=${log.totalTimeMillis}")
+
         }
 
-        override fun getItemCount(): Int = logsList.size
+        override fun getItemCount(): Int {
+            val count = logsList.size
+            Log.d("StudyLogAdapter", "GET_ITEM_COUNT: Adapter reportando ${count} itens.")
+            return count
+        }
 
         inner class StudyLogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val tvLogDate: TextView =

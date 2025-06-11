@@ -27,18 +27,20 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private val _currentSessionDisplayTime = MutableLiveData<Long>(0L)
     val currentSessionDisplayTime: LiveData<Long> = _currentSessionDisplayTime
 
-
     private val _totalStudyTimeTodayFromFirestore = MutableLiveData<Long>(0L)
     val totalStudyTimeTodayFromFirestore: LiveData<Long> = _totalStudyTimeTodayFromFirestore
 
     val pastStudyLogs: LiveData<List<StudyLog>> = studyLogViewModel.pastStudyLogs
 
+    // NOVO: LiveData para indicar se há algum histórico de estudo
+    private val _hasStudyHistory = MutableLiveData<Boolean>(false)
+    val hasStudyHistory: LiveData<Boolean> = _hasStudyHistory
+
     private val _isStudying = MutableLiveData<Boolean>(false)
     val isStudying: LiveData<Boolean> = _isStudying
 
     private var studyStartTime: Long = 0L
-    private var accumulatedStudyTimeBeforeCurrentSession: Long =
-        0L
+    private var accumulatedStudyTimeBeforeCurrentSession: Long = 0L
 
     private val handler = Handler(Looper.getMainLooper())
     private val updateStudyTimeRunnable = object : Runnable {
@@ -54,15 +56,43 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    private val _studyStatusMessage = MutableLiveData<String>()
+    val studyStatusMessage: LiveData<String> = _studyStatusMessage
+
     init {
         studyLogViewModel.currentDayStudyLog.observeForever { studyLog ->
             val loadedTime = studyLog?.totalTimeMillis ?: 0L
             _totalStudyTimeTodayFromFirestore.value = loadedTime
-            Log.d(
-                "DashboardViewModel",
-                "Tempo total do dia carregado do StudyLogViewModel: ${formatTime(loadedTime)}"
-            )
+            accumulatedStudyTimeBeforeCurrentSession = loadedTime
+            Log.d("DashboardViewModel", "Tempo total do dia carregado do StudyLogViewModel: ${formatTime(loadedTime)}")
+            updateStudyStatusMessage()
         }
+        _isStudying.observeForever {
+            updateStudyStatusMessage()
+        }
+        // NOVO: Observar pastStudyLogs para atualizar _hasStudyHistory e a mensagem de status
+        studyLogViewModel.pastStudyLogs.observeForever { logs ->
+            _hasStudyHistory.value = logs.isNotEmpty()
+            updateStudyStatusMessage() // Chama updateStudyStatusMessage novamente ao carregar o histórico
+        }
+        updateStudyStatusMessage()
+    }
+
+    private fun updateStudyStatusMessage() {
+        val totalMinutes = (_totalStudyTimeTodayFromFirestore.value ?: 0L) / (1000 * 60)
+        val isCurrentlyStudying = _isStudying.value ?: false
+        val hasHistory = _hasStudyHistory.value ?: false // Obtém o estado do histórico
+
+        _studyStatusMessage.value = when {
+            isCurrentlyStudying -> "Você está estudando! Continue focado(a)!"
+            totalMinutes >= 60 -> "Incrível! Você já estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)} hoje! Que tal mais um pouco?"
+            totalMinutes >= 30 -> "Mandou bem! Você já estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)} hoje. Mantenha o ritmo!"
+            totalMinutes > 0 -> "Ótimo começo! Você já estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)}. Vamos treinar um pouco mais!"
+            // NOVA LÓGICA AQUI
+            hasHistory -> "Incrível! Você já estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)} hoje! Vamos treinar um pouco mais!" // Se tempo hoje é 0, mas tem histórico geral
+            else -> "Ainda não estudou hoje. Que tal começar?" // Tempo hoje 0, e sem histórico geral
+        }
+        Log.d("DashboardViewModel", "Mensagem de status atualizada para: ${_studyStatusMessage.value}")
     }
 
     fun updateLoggedInUser(email: String) {
@@ -79,12 +109,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             accumulatedStudyTimeBeforeCurrentSession = _totalStudyTimeTodayFromFirestore.value ?: 0L
             _isStudying.value = true
             handler.post(updateStudyTimeRunnable)
-            Log.d(
-                "DashboardViewModel",
-                "Sessão iniciada. Tempo base acumulado: ${
-                    formatTime(accumulatedStudyTimeBeforeCurrentSession)
-                }"
-            )
+            Log.d("DashboardViewModel", "Sessão iniciada. Tempo base acumulado: ${formatTime(accumulatedStudyTimeBeforeCurrentSession)}")
         }
     }
 
@@ -93,17 +118,15 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             handler.removeCallbacks(updateStudyTimeRunnable)
 
             val elapsedInCurrentSession = System.currentTimeMillis() - studyStartTime
-            val finalTotalTimeForDay =
-                accumulatedStudyTimeBeforeCurrentSession + elapsedInCurrentSession
+            val finalTotalTimeForDay = accumulatedStudyTimeBeforeCurrentSession + elapsedInCurrentSession
 
             _isStudying.value = false
+
             _currentSessionDisplayTime.value = 0L
+
             studyLogViewModel.saveStudyLog(finalTotalTimeForDay)
 
-            Log.d(
-                "DashboardViewModel",
-                "Sessão parada. Tempo final para o dia salvo: ${formatTime(finalTotalTimeForDay)}. Cronômetro zerado."
-            )
+            Log.d("DashboardViewModel", "Sessão parada. Tempo final para o dia salvo: ${formatTime(finalTotalTimeForDay)}. Cronômetro zerado.")
         }
     }
 
@@ -115,18 +138,14 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun getPointsForStudyTime(): String {
-        val minutes = (_totalStudyTimeTodayFromFirestore.value ?: 0L) / (1000 * 60)
-        return when {
-            minutes >= 60 -> "Ótimo! Você estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)}! Ganhou 100 pontos e a badge 'Mestre da Música'!"
-            minutes >= 30 -> "Muito bom! Você estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)}! Ganhou 50 pontos e a badge 'Estudioso Dedicado'!"
-            minutes > 0 -> "Você estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)}! Continue assim!"
-            else -> "Ainda não estudou hoje. Que tal começar?"
-        }
+        return ""
     }
 
     override fun onCleared() {
         super.onCleared()
         handler.removeCallbacks(updateStudyTimeRunnable)
-        studyLogViewModel.currentDayStudyLog.removeObserver { /* remove observer */ }
+        studyLogViewModel.currentDayStudyLog.removeObserver { }
+        _isStudying.removeObserver { }
+        studyLogViewModel.pastStudyLogs.removeObserver { } // REMOVER O NOVO OBSERVER FOREVER
     }
 }
