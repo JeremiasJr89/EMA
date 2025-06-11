@@ -23,7 +23,6 @@ class AuthActivity : AppCompatActivity() {
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Verifica o estado de login ao iniciar a atividade
         if (authViewModel.currentUser.value != null) {
             navigateToDashboard()
             return
@@ -31,7 +30,7 @@ class AuthActivity : AppCompatActivity() {
 
         setupObservers()
         setupListeners()
-        setupOnBackPressedCallback() // NOVO: Configurar o callback do botão Voltar
+        setupOnBackPressedCallback()
     }
 
     // NOVO MÉTODO: Configura o comportamento do botão Voltar
