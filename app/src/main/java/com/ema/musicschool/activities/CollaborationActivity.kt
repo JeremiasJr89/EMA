@@ -48,7 +48,6 @@ class CollaborationActivity : AppCompatActivity() {
     }
 
     private fun setupMessageRecyclerView() {
-        // Passar o ViewModel para o MessageAdapter
         messageAdapter = MessageAdapter(collaborationViewModel)
         binding.rvGroupChat.apply {
             layoutManager = LinearLayoutManager(this@CollaborationActivity)
@@ -67,6 +66,7 @@ class CollaborationActivity : AppCompatActivity() {
                 binding.tvSelectGroupPrompt.visibility = View.GONE
                 val group = collaborationViewModel.studyGroups.value?.find { it.id == groupId }
                 binding.tvCurrentGroupName.text = group?.name ?: "Grupo Selecionado"
+                // As mensagens serão carregadas pelo observer do _currentGroupId no ViewModel
             } else {
                 binding.llGroupChat.visibility = View.GONE
                 binding.tvSelectGroupPrompt.visibility = View.VISIBLE
@@ -91,7 +91,6 @@ class CollaborationActivity : AppCompatActivity() {
             }
         }
     }
-
     // Adaptador para RecyclerView de Grupos de Estudo (mantém-se o mesmo)
     inner class GroupAdapter(private val onGroupClick: (StudyGroup) -> Unit) : RecyclerView.Adapter<GroupAdapter.GroupViewHolder>() {
         private var groupsList: MutableList<StudyGroup> = mutableListOf()
@@ -168,20 +167,10 @@ class CollaborationActivity : AppCompatActivity() {
             private val tvTimestamp: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_message_timestamp)
 
             fun bind(message: Message) {
-                // Priorize o senderName do objeto Message se ele já estiver preenchido
-                if (message.senderName.isNotEmpty()) {
-                    tvSender.text = message.senderName
-                } else {
-                    // Se senderName estiver vazio, busque o nome do perfil pelo senderId
-                    // Isso ocorrerá para mensagens estáticas ou as que não foram salvas com senderName
-                    collaborationViewModel.getSenderNameForDisplay(message.senderId) { name ->
-                        tvSender.text = name
-                    }
-                }
-
+                tvSender.text = message.senderName // Agora usa o senderName do objeto Message
                 tvContent.text = message.content
                 val dateFormat = SimpleDateFormat("HH:mm - dd/MM", Locale.getDefault())
-                tvTimestamp.text = dateFormat.format(message.timestamp ?: Date()) // Use Date() como fallback
+                tvTimestamp.text = dateFormat.format(message.timestamp ?: Date())
             }
         }
     }

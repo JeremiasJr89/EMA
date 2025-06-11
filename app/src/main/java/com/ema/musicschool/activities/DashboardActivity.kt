@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -16,10 +18,10 @@ import java.util.Locale
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ema.musicschool.R
 import com.ema.musicschool.data.StudyLog
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
-
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -33,10 +35,32 @@ class DashboardActivity : AppCompatActivity() {
         binding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.title = ""
         setupRecyclerView()
         setupObservers()
         setupListeners()
     }
+
+    // NOVO MÉTODO: Inflar o menu na barra de ferramentas
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.dashboard_menu, menu)
+        return true
+    }
+
+    // NOVO MÉTODO: Lidar com cliques nos itens do menu
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_edit_profile -> {
+                val intent = Intent(this, EditProfileActivity::class.java)
+                startActivity(intent)
+                true // Retorna true para indicar que o evento foi consumido
+            }
+            // Você pode adicionar outros itens de menu aqui se houver
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 
     private fun setupRecyclerView() {
         studyLogAdapter = StudyLogAdapter(dashboardViewModel)
@@ -61,22 +85,15 @@ class DashboardActivity : AppCompatActivity() {
             binding.tvWelcome.text = "Olá, ${fullName}!"
         }
 
-        // NOVO: Observar o tempo de exibição do cronômetro (que zera)
         dashboardViewModel.currentSessionDisplayTime.observe(this) { timeInMillis ->
-            binding.tvStudyTime.text =
-                "Tempo de estudo: ${dashboardViewModel.formatTime(timeInMillis)}" // Texto do cronômetro
-            // A barra de progresso e o status da gamificação serão baseados no tempo total do dia
+            binding.tvStudyTime.text = "Tempo de estudo: ${dashboardViewModel.formatTime(timeInMillis)}"
         }
 
-        // NOVO: Observar o tempo TOTAL acumulado do dia (para gamificação e barra de progresso)
         dashboardViewModel.totalStudyTimeTodayFromFirestore.observe(this) { totalTimeForDay ->
-            // Atualizar barra de progresso e status da gamificação com o tempo TOTAL do dia
             val minutes = totalTimeForDay / (1000 * 60)
             val progress = (minutes * 100 / 60).toInt().coerceIn(0, 100)
             binding.progressBarStudy.progress = progress
-            binding.tvProgressStatus.text = dashboardViewModel.getPointsForStudyTime()
         }
-
 
         dashboardViewModel.isStudying.observe(this) { isStudying ->
             if (isStudying) {
@@ -90,10 +107,7 @@ class DashboardActivity : AppCompatActivity() {
 
         dashboardViewModel.pastStudyLogs.observe(this) { logs ->
             studyLogAdapter.submitList(logs)
-            Log.d(
-                "DashboardActivity",
-                "Observer de pastStudyLogs acionado. Itens recebidos: ${logs.size}"
-            )
+            Log.d("DashboardActivity", "Observer de pastStudyLogs acionado. Itens recebidos: ${logs.size}")
         }
     }
 
@@ -101,11 +115,7 @@ class DashboardActivity : AppCompatActivity() {
         binding.btnToggleStudy.setOnClickListener {
             if (dashboardViewModel.isStudying.value == true) {
                 dashboardViewModel.stopStudySession()
-                Toast.makeText(
-                    this,
-                    "Sessão de estudo encerrada e tempo salvo!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "Sessão de estudo encerrada e tempo salvo!", Toast.LENGTH_SHORT).show()
             } else {
                 dashboardViewModel.startStudySession()
                 Toast.makeText(this, "Sessão de estudo iniciada!", Toast.LENGTH_SHORT).show()
@@ -122,33 +132,28 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // REMOVIDO: Listener do botão "Editar Perfil" direto no layout
+        // binding.btnEditProfile.setOnClickListener {
+        //     val intent = Intent(this, EditProfileActivity::class.java)
+        //     startActivity(intent)
+        // }
+
         binding.btnLogout.setOnClickListener {
             authViewModel.logout()
             Toast.makeText(this, "Logout realizado com sucesso.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    inner class StudyLogAdapter(private val dashboardViewModel: DashboardViewModel) :
-        RecyclerView.Adapter<StudyLogAdapter.StudyLogViewHolder>() {
-
+    inner class StudyLogAdapter(private val dashboardViewModel: DashboardViewModel) : RecyclerView.Adapter<StudyLogAdapter.StudyLogViewHolder>() {
         private var logsList: List<StudyLog> = emptyList()
 
         fun submitList(list: List<StudyLog>) {
             logsList = list
             notifyDataSetChanged()
-            Log.d(
-                "StudyLogAdapter",
-                "submitList chamado. Adapter agora tem ${logsList.size} itens."
-            ) // ADICIONE ESTE LOG
-            if (logsList.isEmpty()) {
-                Log.d("StudyLogAdapter", "submitList recebeu lista vazia. Histórico não aparecerá.")
-            }
         }
 
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudyLogViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(com.ema.musicschool.R.layout.item_study_log, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(com.ema.musicschool.R.layout.item_study_log, parent, false)
             return StudyLogViewHolder(view)
         }
 
