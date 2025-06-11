@@ -79,7 +79,6 @@ class PerformanceActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    // Adapter para RecyclerView de Performances
     inner class PerformanceAdapter : RecyclerView.Adapter<PerformanceAdapter.PerformanceViewHolder>() {
 
         private var performancesList: MutableList<Performance> = mutableListOf()

@@ -20,14 +20,8 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Verifica o estado de login ao iniciar a atividade
-        // Se o usuário já estiver logado (e tiver um perfil, opcional), vai direto para o Dashboard.
-        // Se já autenticado mas não tem perfil, pode ir para a tela de perfil.
-        // Para este protótipo, se autenticado, vai para o dashboard.
         if (authViewModel.currentUser.value != null) {
-            navigateToDashboard() // Ou navigateToUserProfileIfMissing()
-            return
+            navigateToDashboard()
         }
 
         setupObservers()
@@ -38,18 +32,16 @@ class AuthActivity : AppCompatActivity() {
         authViewModel.loginResult.observe(this) { success ->
             if (success) {
                 Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
-                navigateToDashboard() // Login vai para o Dashboard
+                navigateToDashboard()
             } else {
-                // A mensagem de erro será tratada pelo observer de authException
             }
         }
 
         authViewModel.registrationResult.observe(this) { success ->
             if (success) {
                 Toast.makeText(this, "Cadastro de usuário realizado! Agora complete seu perfil.", Toast.LENGTH_LONG).show()
-                navigateToUserProfile() // CADASTRO VAI PARA A TELA DE PERFIL
+                navigateToUserProfile()
             } else {
-                // A mensagem de erro será tratada pelo observer de authException
             }
         }
 
@@ -92,16 +84,14 @@ class AuthActivity : AppCompatActivity() {
 
     private fun navigateToDashboard() {
         val intent = Intent(this, DashboardActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK) // Limpa a back stack
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
         finish()
     }
 
     private fun navigateToUserProfile() {
         val intent = Intent(this, UserProfileActivity::class.java)
-        // Não limpa a back stack aqui, para que o usuário possa voltar se precisar (ou se quiserem forçar a conclusão do perfil)
-        // Para um fluxo de "cadastro obrigatório de perfil", você não limparia aqui e limpara APENAS no DashboardActivity
         startActivity(intent)
-        finish() // Finaliza AuthActivity
+        finish()
     }
 }

@@ -18,15 +18,14 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
     val saveProfileResult: LiveData<Boolean> = _saveProfileResult
 
     private val _userProfile = MutableLiveData<UserProfile?>()
-    val userProfile: LiveData<UserProfile?> = _userProfile
+    val userProfile: LiveData<UserProfile?> = _userProfile // Este é o LiveData que vamos observar
 
     init {
-        loadUserProfile()
+        loadUserProfile() // Carrega o perfil ao inicializar o ViewModel
     }
 
     fun saveUserProfile(profile: UserProfile) {
         val userId = firebaseAuth.currentUser?.uid
-
         if (userId == null) {
             _saveProfileResult.value = false
             Log.e("UserProfileViewModel", "Usuário não logado ao tentar salvar perfil.")
@@ -38,6 +37,7 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
             .set(profile)
             .addOnSuccessListener {
                 _saveProfileResult.value = true
+                _userProfile.value = profile // Atualiza o LiveData do perfil localmente após salvar
                 Log.d("UserProfileViewModel", "Perfil do usuário salvo com sucesso para UID: $userId")
             }
             .addOnFailureListener { e ->
@@ -50,7 +50,7 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
         val userId = firebaseAuth.currentUser?.uid
 
         if (userId == null) {
-            _userProfile.value = null
+            _userProfile.value = null // Define como nulo se não houver usuário logado
             return
         }
 
@@ -68,7 +68,7 @@ class UserProfileViewModel(application: Application) : AndroidViewModel(applicat
             }
             .addOnFailureListener { e ->
                 _userProfile.value = null
-                Log.e("UserProfileViewModel", "cdo usuário para UID: $userId", e)
+                Log.e("UserProfileViewModel", "Erro ao carregar perfil do usuário para UID: $userId", e)
             }
     }
 }

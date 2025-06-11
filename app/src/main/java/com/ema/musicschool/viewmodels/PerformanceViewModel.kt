@@ -10,19 +10,17 @@ import com.google.firebase.auth.FirebaseAuth
 import java.util.UUID
 
 class PerformanceViewModel(application: Application) : AndroidViewModel(application) {
-    // private val userRepository = UserRepository(application.applicationContext) // Remover esta linha
-    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance() // Novo: Instância do Firebase Auth
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val _performances = MutableLiveData<MutableList<Performance>>(mutableListOf())
     val performances: LiveData<MutableList<Performance>> = _performances
 
-    // Dados em memória para simular performances (manter por enquanto)
     init {
         _performances.value?.add(
             Performance(
                 UUID.randomUUID().toString(),
-                "aluno1", // Pode ser substituído por um e-mail de teste ou removido
-                "aluno1@email.com", // Usar e-mail como username
+                "aluno1",
+                "aluno1@email.com",
                 "Minha primeira música no violão",
                 "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             )
@@ -30,8 +28,8 @@ class PerformanceViewModel(application: Application) : AndroidViewModel(applicat
         _performances.value?.add(
             Performance(
                 UUID.randomUUID().toString(),
-                "outroAluno", // Pode ser substituído por um e-mail de teste ou removido
-                "outro@email.com", // Usar e-mail como username
+                "outroAluno",
+                "outro@email.com",
                 "Solo de bateria insano!",
                 "https://www.youtube.com/watch?v=oHg5SJYRHA0"
             )
