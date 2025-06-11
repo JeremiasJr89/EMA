@@ -3,7 +3,9 @@ package com.ema.musicschool.activities
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.ema.musicschool.databinding.ActivityAuthBinding
 import com.ema.musicschool.viewmodels.AuthViewModel
@@ -20,12 +22,36 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Verifica o estado de login ao iniciar a atividade
         if (authViewModel.currentUser.value != null) {
             navigateToDashboard()
+            return
         }
 
         setupObservers()
         setupListeners()
+        setupOnBackPressedCallback() // NOVO: Configurar o callback do botão Voltar
+    }
+
+    // NOVO MÉTODO: Configura o comportamento do botão Voltar
+    private fun setupOnBackPressedCallback() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Constrói e mostra o AlertDialog de confirmação
+                AlertDialog.Builder(this@AuthActivity)
+                    .setTitle("Sair do Aplicativo")
+                    .setMessage("Tem certeza que deseja sair do EMA - Escola de Música?")
+                    .setPositiveButton("Sim") { dialog, which ->
+                        finishAffinity()
+                    }
+                    .setNegativeButton("Não") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 
     private fun setupObservers() {
@@ -33,7 +59,6 @@ class AuthActivity : AppCompatActivity() {
             if (success) {
                 Toast.makeText(this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show()
                 navigateToDashboard()
-            } else {
             }
         }
 
@@ -41,7 +66,6 @@ class AuthActivity : AppCompatActivity() {
             if (success) {
                 Toast.makeText(this, "Cadastro de usuário realizado! Agora complete seu perfil.", Toast.LENGTH_LONG).show()
                 navigateToUserProfile()
-            } else {
             }
         }
 
