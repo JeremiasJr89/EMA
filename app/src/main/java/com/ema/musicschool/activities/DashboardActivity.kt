@@ -16,6 +16,8 @@ import com.ema.musicschool.viewmodels.AuthViewModel
 import com.ema.musicschool.viewmodels.DashboardViewModel
 import java.util.Locale
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ema.musicschool.R
@@ -37,30 +39,49 @@ class DashboardActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = ""
+
         setupRecyclerView()
         setupObservers()
         setupListeners()
+        setupOnBackPressedCallback()
     }
 
-    // NOVO MÉTODO: Inflar o menu na barra de ferramentas
+    // NOVO MÉTODO: Configura o comportamento do botão Voltar
+    private fun setupOnBackPressedCallback() {
+        val callback = object :
+            OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AlertDialog.Builder(this@DashboardActivity)
+                    .setTitle("Sair do Aplicativo")
+                    .setMessage("Tem certeza que deseja sair?")
+                    .setPositiveButton("Sim") { dialog, which ->
+                        finishAffinity()
+                    }
+                    .setNegativeButton("Não") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.dashboard_menu, menu)
         return true
     }
 
-    // NOVO MÉTODO: Lidar com cliques nos itens do menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_edit_profile -> {
                 val intent = Intent(this, EditProfileActivity::class.java)
                 startActivity(intent)
-                true // Retorna true para indicar que o evento foi consumido
+                true
             }
-            // Você pode adicionar outros itens de menu aqui se houver
+
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
     private fun setupRecyclerView() {
         studyLogAdapter = StudyLogAdapter(dashboardViewModel)
@@ -86,7 +107,8 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         dashboardViewModel.currentSessionDisplayTime.observe(this) { timeInMillis ->
-            binding.tvStudyTime.text = "Tempo de estudo: ${dashboardViewModel.formatTime(timeInMillis)}"
+            binding.tvStudyTime.text =
+                "Tempo de estudo: ${dashboardViewModel.formatTime(timeInMillis)}"
         }
 
         dashboardViewModel.totalStudyTimeTodayFromFirestore.observe(this) { totalTimeForDay ->
@@ -107,7 +129,10 @@ class DashboardActivity : AppCompatActivity() {
 
         dashboardViewModel.pastStudyLogs.observe(this) { logs ->
             studyLogAdapter.submitList(logs)
-            Log.d("DashboardActivity", "Observer de pastStudyLogs acionado. Itens recebidos: ${logs.size}")
+            Log.d(
+                "DashboardActivity",
+                "Observer de pastStudyLogs acionado. Itens recebidos: ${logs.size}"
+            )
         }
     }
 
@@ -115,7 +140,11 @@ class DashboardActivity : AppCompatActivity() {
         binding.btnToggleStudy.setOnClickListener {
             if (dashboardViewModel.isStudying.value == true) {
                 dashboardViewModel.stopStudySession()
-                Toast.makeText(this, "Sessão de estudo encerrada e tempo salvo!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Sessão de estudo encerrada e tempo salvo!",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
                 dashboardViewModel.startStudySession()
                 Toast.makeText(this, "Sessão de estudo iniciada!", Toast.LENGTH_SHORT).show()
@@ -132,19 +161,14 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // REMOVIDO: Listener do botão "Editar Perfil" direto no layout
-        // binding.btnEditProfile.setOnClickListener {
-        //     val intent = Intent(this, EditProfileActivity::class.java)
-        //     startActivity(intent)
-        // }
-
         binding.btnLogout.setOnClickListener {
             authViewModel.logout()
             Toast.makeText(this, "Logout realizado com sucesso.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    inner class StudyLogAdapter(private val dashboardViewModel: DashboardViewModel) : RecyclerView.Adapter<StudyLogAdapter.StudyLogViewHolder>() {
+    inner class StudyLogAdapter(private val dashboardViewModel: DashboardViewModel) :
+        RecyclerView.Adapter<StudyLogAdapter.StudyLogViewHolder>() {
         private var logsList: List<StudyLog> = emptyList()
 
         fun submitList(list: List<StudyLog>) {
@@ -153,7 +177,8 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudyLogViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(com.ema.musicschool.R.layout.item_study_log, parent, false)
+            val view = LayoutInflater.from(parent.context)
+                .inflate(com.ema.musicschool.R.layout.item_study_log, parent, false)
             return StudyLogViewHolder(view)
         }
 
@@ -165,8 +190,10 @@ class DashboardActivity : AppCompatActivity() {
         override fun getItemCount(): Int = logsList.size
 
         inner class StudyLogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val tvLogDate: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_log_date)
-            private val tvLogTime: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_log_time)
+            private val tvLogDate: TextView =
+                itemView.findViewById(com.ema.musicschool.R.id.tv_log_date)
+            private val tvLogTime: TextView =
+                itemView.findViewById(com.ema.musicschool.R.id.tv_log_time)
 
             fun bind(log: StudyLog) {
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
