@@ -84,3 +84,11 @@ Este protótipo foi construído com base em uma stack moderna e robusta para des
 ├── libs.versions.toml                         # Catálogo de versões do Gradle (na raiz do projeto)
 └── settings.gradle.kts                        # Configurações do projeto Gradle
 ```
+![Captura de Tela 2025-06-11 às 21 58 56](https://github.com/user-attachments/assets/107a7a89-656f-437a-9fbf-be519be6bf0f)
+![Captura de Tela 2025-06-11 às 21 58 44](https://github.com/user-attachments/assets/99312781-6d67-4e08-af43-e42458fda95a)
+![Captura de Tela 2025-06-11 às 21 58 25](https://github.com/user-attachments/assets/0a3b911a-03d8-447f-ad44-f60f903d64bc)
+![Captura de Tela 2025-06-11 às 21 58 18](https://github.com/user-attachments/assets/175e37a5-3eba-47ea-bd5a-4d9dc3e6aa5b)
+![Captura de Tela 2025-06-11 às 21 58 09](https://github.com/user-attachments/assets/cfc220de-c3cd-496b-9070-16216e6c28f2)
+![Captura de Tela 2025-06-11 às 21 57 59](https://github.com/user-attachments/assets/684c1abb-1973-41b2-84e6-7d3fdf1b575a)
+![Captura de Tela 2025-06-11 às 21 57 49](https://github.com/user-attachments/assets/845c18ac-dda3-46b2-943c-a270a20e70bb)
+![Captura de Tela 2025-06-11 às 21 56 59](https://github.com/user-attachments/assets/f34ce611-6038-4230-bcd2-c68493ec2339)
