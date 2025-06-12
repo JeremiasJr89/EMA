@@ -205,9 +205,9 @@ class DashboardActivity : AppCompatActivity() {
 
         inner class StudyLogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val tvLogDate: TextView =
-                itemView.findViewById(com.ema.musicschool.R.id.tv_log_date)
+                itemView.findViewById(R.id.tv_log_date)
             private val tvLogTime: TextView =
-                itemView.findViewById(com.ema.musicschool.R.id.tv_log_time)
+                itemView.findViewById(R.id.tv_log_time)
 
             fun bind(log: StudyLog) {
                 val dateFormat = SimpleDateFormat(FORMATO_DE_DATA_INICIAL, Locale.getDefault())

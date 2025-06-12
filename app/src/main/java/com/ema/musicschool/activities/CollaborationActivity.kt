@@ -124,7 +124,7 @@ class CollaborationActivity : AppCompatActivity() {
                     btnJoinGroup.isEnabled = true
                     btnJoinGroup.setBackgroundColor(itemView.context.getColor(com.google.android.material.R.color.design_default_color_primary))
                 } else {
-                    btnJoinGroup.text = R.string.ema_strings_entrar_no_grupo.toString()
+                    btnJoinGroup.text = getString(R.string.ema_strings_entrar_no_grupo)
                     btnJoinGroup.isEnabled = true
                     btnJoinGroup.setBackgroundColor(itemView.context.getColor(com.google.android.material.R.color.design_default_color_secondary))
                 }
@@ -173,7 +173,7 @@ class CollaborationActivity : AppCompatActivity() {
             fun bind(message: Message) {
                 tvSender.text = message.senderName
                 tvContent.text = message.content
-                val dateFormat = SimpleDateFormat(R.string.ema_strings_hh_mm_dd_mm.toString(), Locale.getDefault())
+                val dateFormat = SimpleDateFormat (getString(R.string.ema_strings_hh_mm_dd_mm), Locale.getDefault())
                 tvTimestamp.text = dateFormat.format(message.timestamp ?: Date())
             }
         }
