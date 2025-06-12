@@ -20,7 +20,7 @@
             android:textStyle="bold"
             android:textSize="18sp"
             android:textColor="@android:color/black"
-            android:text="Título da Performance"/>
+            android:text="@string/ema_strings_titulo_da_performance"/>
 
         <TextView
             android:id="@+id/tv_performance_uploader"
@@ -29,7 +29,7 @@
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray"
-            android:text="Por: Nome do Usuário"/>
+            android:text="@string/ema_strings_por_nome_do_usu_rio"/>
 
         <TextView
             android:id="@+id/tv_performance_video_link"
@@ -39,7 +39,7 @@
             android:textSize="14sp"
             android:textColor="@color/ema_green_dark"
             android:autoLink="web"
-            android:text="Link: http://youtube.com/link-do-video"/>
+            android:text="@string/ema_strings_link_http_youtube_com_link_do_video"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

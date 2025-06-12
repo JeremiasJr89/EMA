@@ -1,5 +1,6 @@
 package com.ema.musicschool.activities
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.ema.musicschool.R
 import com.ema.musicschool.data.Performance
 import com.ema.musicschool.databinding.ActivityPerformanceBinding
 import com.ema.musicschool.viewmodels.PerformanceViewModel
@@ -60,7 +62,7 @@ class PerformanceActivity : AppCompatActivity() {
         val btnPublish = dialogView.findViewById<Button>(com.ema.musicschool.R.id.btn_publish_performance)
 
         val dialog = AlertDialog.Builder(this)
-            .setTitle("Publicar Nova Performance")
+            .setTitle(getString(R.string.ema_strings_publicar_nova_performance))
             .setView(dialogView)
             .create()
 
@@ -70,10 +72,12 @@ class PerformanceActivity : AppCompatActivity() {
 
             if (title.isNotEmpty() && videoLink.isNotEmpty()) {
                 performanceViewModel.publishPerformance(title, videoLink)
-                Toast.makeText(this, "Performance publicada!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.ema_strings_performance_publicada), Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             } else {
-                Toast.makeText(this, "Preencha todos os campos.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.ema_strings_preencha_todos_os_campos), Toast.LENGTH_SHORT).show()
             }
         }
         dialog.show()
@@ -83,13 +87,14 @@ class PerformanceActivity : AppCompatActivity() {
 
         private var performancesList: MutableList<Performance> = mutableListOf()
 
+        @SuppressLint("NotifyDataSetChanged")
         fun submitList(list: MutableList<Performance>) {
             performancesList = list
             notifyDataSetChanged()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PerformanceViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(com.ema.musicschool.R.layout.item_performance, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_performance, parent, false)
             return PerformanceViewHolder(view)
         }
 
@@ -101,14 +106,14 @@ class PerformanceActivity : AppCompatActivity() {
         override fun getItemCount(): Int = performancesList.size
 
         inner class PerformanceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val tvTitle: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_performance_title)
-            private val tvUploader: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_performance_uploader)
-            private val tvVideoLink: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_performance_video_link)
+            private val tvTitle: TextView = itemView.findViewById(R.id.tv_performance_title)
+            private val tvUploader: TextView = itemView.findViewById(R.id.tv_performance_uploader)
+            private val tvVideoLink: TextView = itemView.findViewById(R.id.tv_performance_video_link)
 
             fun bind(performance: Performance) {
                 tvTitle.text = performance.title
-                tvUploader.text = "Por: ${performance.username}"
-                tvVideoLink.text = "Link: ${performance.videoLink}"
+                tvUploader.text = getString(R.string.ema_strings_por, performance.username)
+                tvVideoLink.text = getString(R.string.ema_strings_link, performance.videoLink)
             }
         }
     }

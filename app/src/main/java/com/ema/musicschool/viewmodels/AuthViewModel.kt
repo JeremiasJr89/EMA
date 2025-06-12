@@ -22,7 +22,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentUser = MutableLiveData<FirebaseUser?>()
     val currentUser: LiveData<FirebaseUser?> = _currentUser
 
-    // NOVO: LiveData para capturar exceções (para mensagens de erro mais detalhadas)
     private val _authException = MutableLiveData<Exception?>()
     val authException: LiveData<Exception?> = _authException
 
@@ -34,27 +33,27 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun login(email: String, password: String) {
-        _authException.value = null // Limpa exceção anterior
+        _authException.value = null
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _loginResult.value = true
                 } else {
                     _loginResult.value = false
-                    _authException.value = task.exception // Captura a exceção
+                    _authException.value = task.exception
                 }
             }
     }
 
     fun register(email: String, password: String) {
-        _authException.value = null // Limpa exceção anterior
+        _authException.value = null
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     _registrationResult.value = true
                 } else {
                     _registrationResult.value = false
-                    _authException.value = task.exception // Captura a exceção
+                    _authException.value = task.exception
                 }
             }
     }

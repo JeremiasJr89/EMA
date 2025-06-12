@@ -20,7 +20,7 @@
             android:textStyle="bold"
             android:textSize="18sp"
             android:textColor="@color/ema_green_dark"
-            android:text="Nome do Grupo"/>
+            android:text="@string/ema_strings_nome_do_grupo"/>
 
         <TextView
             android:id="@+id/tv_group_description"
@@ -29,7 +29,7 @@
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             android:textColor="@android:color/black"
-            android:text="Descrição do grupo de estudo."/>
+            android:text="@string/ema_strings_descri_o_do_grupo_de_estudo"/>
 
         <TextView
             android:id="@+id/tv_member_count"
@@ -38,14 +38,14 @@
             android:layout_marginTop="4dp"
             android:textSize="12sp"
             android:textColor="@android:color/darker_gray"
-            android:text="Membros: 0"/>
+            android:text="@string/ema_strings_membros_0"/>
 
         <Button
             android:id="@+id/btn_join_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Entrar no Grupo"
+            android:text="@string/ema_strings_entrar_no_grupo"
             android:backgroundTint="@color/ema_green_dark"
             android:textColor="@android:color/white"/>
 

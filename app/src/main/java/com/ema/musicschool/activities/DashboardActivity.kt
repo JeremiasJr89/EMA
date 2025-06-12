@@ -1,8 +1,8 @@
 package com.ema.musicschool.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -31,6 +31,9 @@ class DashboardActivity : AppCompatActivity() {
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private lateinit var studyLogAdapter: StudyLogAdapter
 
+    private val FORMATO_DE_DATA_INICIAL = "dd/MM/yyyy"
+    private val CHANCE_FORMATO_DE_DATA = "yyyy-MM-dd"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDashboardBinding.inflate(layoutInflater)
@@ -43,7 +46,6 @@ class DashboardActivity : AppCompatActivity() {
         setupObservers()
         setupListeners()
         setupOnBackPressedCallback()
-        Log.d("DashboardActivity", "onCreate: DashboardActivity criada.")
 
     }
 
@@ -53,12 +55,12 @@ class DashboardActivity : AppCompatActivity() {
             OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 AlertDialog.Builder(this@DashboardActivity)
-                    .setTitle("Sair do Aplicativo")
-                    .setMessage("Tem certeza que deseja sair?")
-                    .setPositiveButton("Sim") { dialog, which ->
+                    .setTitle(R.string.ema_strings_sair_do_aplicativo)
+                    .setMessage(R.string.ema_strings_tem_certeza_que_deseja_sair_do_aplicativo)
+                    .setPositiveButton(R.string.ema_strings_sim) { dialog, which ->
                         finishAffinity()
                     }
-                    .setNegativeButton("Não") { dialog, which ->
+                    .setNegativeButton(R.string.ema_strings_nao) { dialog, which ->
                         dialog.dismiss()
                     }
                     .show()
@@ -99,21 +101,24 @@ class DashboardActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                dashboardViewModel.updateLoggedInUser(firebaseUser.email ?: "Usuário Desconhecido")
+                dashboardViewModel.updateLoggedInUser(firebaseUser.email ?: getString(R.string.ema_strings_usu_rio_desconhecido))
             }
         }
 
         dashboardViewModel.userFullName.observe(this) { fullName ->
-            binding.tvWelcome.text = "Olá, ${fullName}!"
+            binding.tvWelcome.text = getString(R.string.ema_strings_ola, fullName)
         }
 
         dashboardViewModel.currentSessionDisplayTime.observe(this) { timeInMillis ->
             binding.tvStudyTime.text =
-                "Tempo de estudo: ${dashboardViewModel.formatTime(timeInMillis)}"
+                getString(
+                    R.string.ema_strings_tempo_de_estudo,
+                    dashboardViewModel.formatTime(timeInMillis)
+                )
         }
 
         dashboardViewModel.studyStatusMessage.observe(this) { message ->
-            binding.tvProgressStatus.text = message //
+            binding.tvProgressStatus.text = message
         }
 
 
@@ -125,24 +130,18 @@ class DashboardActivity : AppCompatActivity() {
 
         dashboardViewModel.isStudying.observe(this) { isStudying ->
             if (isStudying) {
-                binding.btnToggleStudy.text = "Parar Estudo"
+                binding.btnToggleStudy.text = getString(R.string.ema_strings_parar_estudo)
                 binding.btnToggleStudy.setBackgroundColor(getColor(android.R.color.holo_red_light))
             } else {
-                binding.btnToggleStudy.text = "Iniciar Estudo"
-                binding.btnToggleStudy.setBackgroundColor(getColor(com.google.android.material.R.color.design_default_color_primary))
+                binding.btnToggleStudy.text = getString(R.string.ema_strings_iniciar_estudo)
+                binding.btnToggleStudy.setBackgroundColor(getColor(R.color.ema_green_dark))
             }
         }
 
         dashboardViewModel.pastStudyLogs.observe(this) { logs ->
             studyLogAdapter.submitList(logs)
-            Log.d(
-                "DashboardActivity",
-                "OBSERVER: Observer de pastStudyLogs acionado. Itens recebidos: ${logs.size}. Chamando submitList()."
-            )
         }
-        Log.d("DashboardActivity", "setupObservers: Observers configurados.")
     }
-
 
     private fun setupListeners() {
         binding.btnToggleStudy.setOnClickListener {
@@ -150,12 +149,13 @@ class DashboardActivity : AppCompatActivity() {
                 dashboardViewModel.stopStudySession()
                 Toast.makeText(
                     this,
-                    "Sessão de estudo encerrada e tempo salvo!",
+                    getString(R.string.ema_strings_sess_o_de_estudo_encerrada_e_tempo_salvo),
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
                 dashboardViewModel.startStudySession()
-                Toast.makeText(this, "Sessão de estudo iniciada!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.ema_strings_sess_o_de_estudo_iniciada), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -171,7 +171,8 @@ class DashboardActivity : AppCompatActivity() {
 
         binding.btnLogout.setOnClickListener {
             authViewModel.logout()
-            Toast.makeText(this, "Logout realizado com sucesso.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,
+                getString(R.string.ema_strings_logout_realizado_com_sucesso), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -179,6 +180,7 @@ class DashboardActivity : AppCompatActivity() {
         RecyclerView.Adapter<StudyLogAdapter.StudyLogViewHolder>() {
         private var logsList: List<StudyLog> = emptyList()
 
+        @SuppressLint("NotifyDataSetChanged")
         fun submitList(list: List<StudyLog>) {
             logsList = list
             notifyDataSetChanged()
@@ -186,33 +188,31 @@ class DashboardActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudyLogViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(com.ema.musicschool.R.layout.item_study_log, parent, false)
+                .inflate(R.layout.item_study_log, parent, false)
             return StudyLogViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: StudyLogViewHolder, position: Int) {
             val log = logsList[position]
             holder.bind(log)
-            Log.d("StudyLogAdapter", "BIND: Item ${position} sendo vinculado: Date=${log.date}, Time=${log.totalTimeMillis}")
 
         }
 
         override fun getItemCount(): Int {
             val count = logsList.size
-            Log.d("StudyLogAdapter", "GET_ITEM_COUNT: Adapter reportando ${count} itens.")
             return count
         }
 
         inner class StudyLogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val tvLogDate: TextView =
-                itemView.findViewById(com.ema.musicschool.R.id.tv_log_date)
+                itemView.findViewById(R.id.tv_log_date)
             private val tvLogTime: TextView =
-                itemView.findViewById(com.ema.musicschool.R.id.tv_log_time)
+                itemView.findViewById(R.id.tv_log_time)
 
             fun bind(log: StudyLog) {
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                val dateFormat = SimpleDateFormat(FORMATO_DE_DATA_INICIAL, Locale.getDefault())
                 val parsedDate = try {
-                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(log.date)
+                    SimpleDateFormat(CHANCE_FORMATO_DE_DATA, Locale.getDefault()).parse(log.date)
                 } catch (e: Exception) {
                     null
                 }

@@ -3,7 +3,6 @@ package com.ema.musicschool.viewmodels
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -32,7 +31,6 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     val pastStudyLogs: LiveData<List<StudyLog>> = studyLogViewModel.pastStudyLogs
 
-    // NOVO: LiveData para indicar se há algum histórico de estudo
     private val _hasStudyHistory = MutableLiveData<Boolean>(false)
     val hasStudyHistory: LiveData<Boolean> = _hasStudyHistory
 
@@ -64,16 +62,14 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             val loadedTime = studyLog?.totalTimeMillis ?: 0L
             _totalStudyTimeTodayFromFirestore.value = loadedTime
             accumulatedStudyTimeBeforeCurrentSession = loadedTime
-            Log.d("DashboardViewModel", "Tempo total do dia carregado do StudyLogViewModel: ${formatTime(loadedTime)}")
             updateStudyStatusMessage()
         }
         _isStudying.observeForever {
             updateStudyStatusMessage()
         }
-        // NOVO: Observar pastStudyLogs para atualizar _hasStudyHistory e a mensagem de status
         studyLogViewModel.pastStudyLogs.observeForever { logs ->
             _hasStudyHistory.value = logs.isNotEmpty()
-            updateStudyStatusMessage() // Chama updateStudyStatusMessage novamente ao carregar o histórico
+            updateStudyStatusMessage()
         }
         updateStudyStatusMessage()
     }
@@ -81,18 +77,31 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private fun updateStudyStatusMessage() {
         val totalMinutes = (_totalStudyTimeTodayFromFirestore.value ?: 0L) / (1000 * 60)
         val isCurrentlyStudying = _isStudying.value ?: false
-        val hasHistory = _hasStudyHistory.value ?: false // Obtém o estado do histórico
+        val hasHistory = _hasStudyHistory.value ?: false
 
         _studyStatusMessage.value = when {
             isCurrentlyStudying -> "Você está estudando! Continue focado(a)!"
-            totalMinutes >= 60 -> "Incrível! Você já estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)} hoje! Que tal mais um pouco?"
-            totalMinutes >= 30 -> "Mandou bem! Você já estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)} hoje. Mantenha o ritmo!"
-            totalMinutes > 0 -> "Ótimo começo! Você já estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)}. Vamos treinar um pouco mais!"
+            totalMinutes >= 60 -> "Incrível! Você já estudou ${
+                formatTime(
+                    _totalStudyTimeTodayFromFirestore.value ?: 0L
+                )
+            } hoje! Que tal mais um pouco?"
+
+            totalMinutes >= 30 -> "Mandou bem! Você já estudou ${
+                formatTime(
+                    _totalStudyTimeTodayFromFirestore.value ?: 0L
+                )
+            } hoje. Mantenha o ritmo!"
+
+            totalMinutes > 0 -> "Ótimo começo! Você já estudou ${
+                formatTime(
+                    _totalStudyTimeTodayFromFirestore.value ?: 0L
+                )
+            }. Vamos treinar um pouco mais!"
             // NOVA LÓGICA AQUI
             hasHistory -> "Incrível! Você já estudou ${formatTime(_totalStudyTimeTodayFromFirestore.value ?: 0L)} hoje! Vamos treinar um pouco mais!" // Se tempo hoje é 0, mas tem histórico geral
-            else -> "Ainda não estudou hoje. Que tal começar?" // Tempo hoje 0, e sem histórico geral
+            else -> "Ainda não estudou hoje. Que tal começar?"
         }
-        Log.d("DashboardViewModel", "Mensagem de status atualizada para: ${_studyStatusMessage.value}")
     }
 
     fun updateLoggedInUser(email: String) {
@@ -109,7 +118,6 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             accumulatedStudyTimeBeforeCurrentSession = _totalStudyTimeTodayFromFirestore.value ?: 0L
             _isStudying.value = true
             handler.post(updateStudyTimeRunnable)
-            Log.d("DashboardViewModel", "Sessão iniciada. Tempo base acumulado: ${formatTime(accumulatedStudyTimeBeforeCurrentSession)}")
         }
     }
 
@@ -118,7 +126,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             handler.removeCallbacks(updateStudyTimeRunnable)
 
             val elapsedInCurrentSession = System.currentTimeMillis() - studyStartTime
-            val finalTotalTimeForDay = accumulatedStudyTimeBeforeCurrentSession + elapsedInCurrentSession
+            val finalTotalTimeForDay =
+                accumulatedStudyTimeBeforeCurrentSession + elapsedInCurrentSession
 
             _isStudying.value = false
 
@@ -126,7 +135,6 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
             studyLogViewModel.saveStudyLog(finalTotalTimeForDay)
 
-            Log.d("DashboardViewModel", "Sessão parada. Tempo final para o dia salvo: ${formatTime(finalTotalTimeForDay)}. Cronômetro zerado.")
         }
     }
 

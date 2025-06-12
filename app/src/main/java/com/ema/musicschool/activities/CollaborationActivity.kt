@@ -1,5 +1,6 @@
 package com.ema.musicschool.activities
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ema.musicschool.R
 import com.ema.musicschool.data.Message
 import com.ema.musicschool.data.StudyGroup
 import com.ema.musicschool.databinding.ActivityCollaborationBinding
@@ -65,8 +67,7 @@ class CollaborationActivity : AppCompatActivity() {
                 binding.llGroupChat.visibility = View.VISIBLE
                 binding.tvSelectGroupPrompt.visibility = View.GONE
                 val group = collaborationViewModel.studyGroups.value?.find { it.id == groupId }
-                binding.tvCurrentGroupName.text = group?.name ?: "Grupo Selecionado"
-                // As mensagens serão carregadas pelo observer do _currentGroupId no ViewModel
+                binding.tvCurrentGroupName.text = group?.name ?: getString(R.string.ema_strings_grupo_selecionado)
             } else {
                 binding.llGroupChat.visibility = View.GONE
                 binding.tvSelectGroupPrompt.visibility = View.VISIBLE
@@ -87,19 +88,20 @@ class CollaborationActivity : AppCompatActivity() {
                 collaborationViewModel.postMessage(currentGroupId, messageContent)
                 binding.etMessageInput.text?.clear()
             } else if (currentGroupId == null) {
-                Toast.makeText(this, "Selecione um grupo para enviar mensagens.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.ema_strings_selecione_um_grupo_para_enviar_mensagens), Toast.LENGTH_SHORT).show()
             }
         }
     }
-    // Adaptador para RecyclerView de Grupos de Estudo (mantém-se o mesmo)
     inner class GroupAdapter(private val onGroupClick: (StudyGroup) -> Unit) : RecyclerView.Adapter<GroupAdapter.GroupViewHolder>() {
         private var groupsList: MutableList<StudyGroup> = mutableListOf()
+        @SuppressLint("NotifyDataSetChanged")
         fun submitList(list: MutableList<StudyGroup>) {
             groupsList = list
             notifyDataSetChanged()
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(com.ema.musicschool.R.layout.item_study_group, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_study_group, parent, false)
             return GroupViewHolder(view)
         }
         override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
@@ -108,20 +110,21 @@ class CollaborationActivity : AppCompatActivity() {
         }
         override fun getItemCount(): Int = groupsList.size
         inner class GroupViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val tvGroupName: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_group_name)
-            private val tvGroupDescription: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_group_description)
-            private val btnJoinGroup: Button = itemView.findViewById(com.ema.musicschool.R.id.btn_join_group)
-            private val tvMemberCount: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_member_count)
+            private val tvGroupName: TextView = itemView.findViewById(R.id.tv_group_name)
+            private val tvGroupDescription: TextView = itemView.findViewById(R.id.tv_group_description)
+            private val btnJoinGroup: Button = itemView.findViewById(R.id.btn_join_group)
+            private val tvMemberCount: TextView = itemView.findViewById(R.id.tv_member_count)
+            @SuppressLint("StringFormatMatches", "NotifyDataSetChanged")
             fun bind(group: StudyGroup, onGroupClick: (StudyGroup) -> Unit) {
                 tvGroupName.text = group.name
                 tvGroupDescription.text = group.description
-                tvMemberCount.text = "Membros: ${group.members.size}"
+                tvMemberCount.text = getString(R.string.ema_strings_membros, group.members.size)
                 if (collaborationViewModel.isUserInGroup(group.id)) {
-                    btnJoinGroup.text = "Ver Grupo"
+                    btnJoinGroup.text = getString(R.string.ema_strings_ver_grupo)
                     btnJoinGroup.isEnabled = true
                     btnJoinGroup.setBackgroundColor(itemView.context.getColor(com.google.android.material.R.color.design_default_color_primary))
                 } else {
-                    btnJoinGroup.text = "Entrar no Grupo"
+                    btnJoinGroup.text = getString(R.string.ema_strings_entrar_no_grupo)
                     btnJoinGroup.isEnabled = true
                     btnJoinGroup.setBackgroundColor(itemView.context.getColor(com.google.android.material.R.color.design_default_color_secondary))
                 }
@@ -130,7 +133,8 @@ class CollaborationActivity : AppCompatActivity() {
                         onGroupClick(group)
                     } else {
                         collaborationViewModel.joinGroup(group.id)
-                        Toast.makeText(itemView.context, "Você entrou no grupo '${group.name}'!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(itemView.context,
+                            getString(R.string.ema_strings_voc_entrou_no_grupo, group.name), Toast.LENGTH_SHORT).show()
                         notifyDataSetChanged()
                         onGroupClick(group)
                     }
@@ -139,18 +143,18 @@ class CollaborationActivity : AppCompatActivity() {
         }
     }
 
-    // Adaptador para RecyclerView de Mensagens
     inner class MessageAdapter(private val collaborationViewModel: CollaborationViewModel) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
         private var messagesList: MutableList<Message> = mutableListOf()
 
+        @SuppressLint("NotifyDataSetChanged")
         fun submitList(list: MutableList<Message>) {
             messagesList = list
             notifyDataSetChanged()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(com.ema.musicschool.R.layout.item_message, parent, false)
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_message, parent, false)
             return MessageViewHolder(view)
         }
 
@@ -162,14 +166,14 @@ class CollaborationActivity : AppCompatActivity() {
         override fun getItemCount(): Int = messagesList.size
 
         inner class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val tvSender: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_message_sender)
-            private val tvContent: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_message_content)
-            private val tvTimestamp: TextView = itemView.findViewById(com.ema.musicschool.R.id.tv_message_timestamp)
+            private val tvSender: TextView = itemView.findViewById(R.id.tv_message_sender)
+            private val tvContent: TextView = itemView.findViewById(R.id.tv_message_content)
+            private val tvTimestamp: TextView = itemView.findViewById(R.id.tv_message_timestamp)
 
             fun bind(message: Message) {
-                tvSender.text = message.senderName // Agora usa o senderName do objeto Message
+                tvSender.text = message.senderName
                 tvContent.text = message.content
-                val dateFormat = SimpleDateFormat("HH:mm - dd/MM", Locale.getDefault())
+                val dateFormat = SimpleDateFormat (getString(R.string.ema_strings_hh_mm_dd_mm), Locale.getDefault())
                 tvTimestamp.text = dateFormat.format(message.timestamp ?: Date())
             }
         }

@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Editar seu Perfil"
+        android:text="@string/ema_strings_editar_seu_perfil"
         android:textColor="@color/ema_green_dark"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Nome Completo"
+            android:hint="@string/ema_strings_nome_completo"
             app:boxBackgroundColor="@color/ema_white"
             app:boxStrokeColor="@color/ema_green_dark">
 
@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Celular (Ex: DDNNNNN-NNNN)"
+            android:hint="@string/ema_strings_celular_ex_ddnnnnn_nnnn"
             app:boxBackgroundColor="@color/ema_white"
             app:boxStrokeColor="@color/ema_green_dark">
 
@@ -61,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Instrumento que está aprendendo"
+            android:hint="@string/ema_strings_instrumento_que_esta_aprendendo"
             app:boxBackgroundColor="@color/ema_white"
             app:boxStrokeColor="@color/ema_green_dark">
 
@@ -76,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Idade (12-17)"
+            android:hint="@string/ema_strings_idade_12_17"
             app:boxBackgroundColor="@color/ema_white"
             app:boxStrokeColor="@color/ema_green_dark">
 
@@ -91,7 +91,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Endereço Completo"
+            android:hint="@string/ema_strings_endere_o_completo"
             app:boxBackgroundColor="@color/ema_white"
             app:boxStrokeColor="@color/ema_green_dark">
 
@@ -113,7 +113,7 @@ android:layout_marginBottom="16dp"
 android:layout_marginEnd="16dp"
 android:layout_marginStart="16dp"
 android:layout_width="0dp"
-android:text="Salvar Alterações"
+android:text="@string/ema_strings_salvar_alteracoes"
 android:textColor="@color/ema_white"
 app:layout_constraintBottom_toBottomOf="parent"
 app:layout_constraintEnd_toEndOf="parent"
