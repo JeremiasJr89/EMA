@@ -19,7 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="DD/MM/YYYY"
+            android:text="@string/ema_strings_dd_mm_yyyy"
             android:textColor="@color/ema_black"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -28,7 +28,7 @@
             android:id="@+id/tv_log_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="HH:MM:SS"
+            android:text="@string/ema_strings_hh_mm_ss"
             android:textColor="@color/ema_green_dark"
             android:textSize="14sp"
             android:textStyle="bold" />

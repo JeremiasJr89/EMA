@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:hint="Título da Performance">
+        android:hint="@string/ema_strings_titulo_da_performance">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_performance_title"
@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:hint="Link do Vídeo (Ex: YouTube)">
+        android:hint="@string/ema_strings_link_do_video_ex_youtube">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_video_link"
@@ -35,7 +35,7 @@
         android:id="@+id/btn_publish_performance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Publicar"
+        android:text="@string/ema_strings_publicar"
         android:backgroundTint="@color/ema_green_main"
         android:textColor="@android:color/black" />
 

@@ -12,7 +12,7 @@
         android:id="@+id/tv_profile_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Complete seu Perfil"
+        android:text="@string/ema_strings_complete_seu_perfil"
         android:textColor="@color/ema_green_dark"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -41,7 +41,7 @@
                 android:layout_marginBottom="16dp"
                 app:boxBackgroundColor="@color/ema_white"
                 app:boxStrokeColor="@color/ema_green_dark"
-                android:hint="Nome Completo">
+                android:hint="@string/ema_strings_nome_completo">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_full_name"
                     android:layout_width="match_parent"
@@ -55,7 +55,7 @@
                 android:layout_marginBottom="16dp"
                 app:boxBackgroundColor="@color/ema_white"
                 app:boxStrokeColor="@color/ema_green_dark"
-                android:hint="Celular (Ex: DDNNNNN-NNNN)">
+                android:hint="@string/ema_strings_celular_ex_ddnnnnn_nnnn">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_phone_number"
                     android:layout_width="match_parent"
@@ -69,7 +69,7 @@
                 android:layout_marginBottom="16dp"
                 app:boxBackgroundColor="@color/ema_white"
                 app:boxStrokeColor="@color/ema_green_dark"
-                android:hint="Instrumento que está aprendendo">
+                android:hint="@string/ema_strings_instrumento_que_esta_aprendendo">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_instrument"
                     android:layout_width="match_parent"
@@ -83,7 +83,7 @@
                 android:layout_marginBottom="16dp"
                 app:boxBackgroundColor="@color/ema_white"
                 app:boxStrokeColor="@color/ema_green_dark"
-                android:hint="Idade (12-17)">
+                android:hint="@string/ema_strings_idade_12_17">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_age"
                     android:layout_width="match_parent"
@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 app:boxBackgroundColor="@color/ema_white"
                 app:boxStrokeColor="@color/ema_green_dark"
-                android:hint="Endereço Completo">
+                android:hint="@string/ema_strings_endere_o_completo">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_address"
                     android:layout_width="match_parent"
@@ -113,7 +113,7 @@
         android:id="@+id/btn_save_profile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Salvar Perfil"
+        android:text="@string/ema_strings_salvar_perfil"
         android:backgroundTint="@color/ema_green_main"
         android:textColor="@color/ema_white"
         android:layout_marginBottom="16dp"
